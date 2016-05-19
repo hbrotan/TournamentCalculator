@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Office.Interop.Excel;
 
-namespace TournamentCalculator
+namespace TournamentCalculator.ExcelService
 {
     public class ExcelService
     {

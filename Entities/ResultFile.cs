@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace TournamentCalculator
+namespace TournamentCalculator.Entities
 {
     public class ResultFile
     {

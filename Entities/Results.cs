@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-namespace TournamentCalculator
+namespace TournamentCalculator.Entities
 {
     public class Results
     {

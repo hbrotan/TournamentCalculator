@@ -120,13 +120,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ResultFile.cs" />
-    <Compile Include="Results.cs" />
+    <Compile Include="Entities\ResultFile.cs" />
+    <Compile Include="Entities\Results.cs" />
     <Compile Include="ExcelReaders\GroupStage.cs" />
     <Compile Include="ExcelReaders\PointCalculator.cs" />
-    <Compile Include="ExcelService.cs" />
+    <Compile Include="ExcelService\ExcelService.cs" />
     <Compile Include="ExcelReaders\Tournament.cs" />
-    <Compile Include="GroupBE.cs" />
+    <Compile Include="Entities\Group.cs" />
     <Compile Include="ExcelReaders\TeamPlacementReader.cs" />
     <None Include="App.config">
       <SubType>Designer</SubType>

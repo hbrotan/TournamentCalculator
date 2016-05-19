@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.Office.Interop.Excel;
+using TournamentCalculator.Entities;
 using TournamentCalculator.ExcelReaders;
 
 namespace TournamentCalculator
@@ -24,7 +25,7 @@ namespace TournamentCalculator
             try
             {
                 // create new command executer instance
-                ExcelService.KillAllExcelProcesses();
+                ExcelService.ExcelService.KillAllExcelProcesses();
                 new CommandExecuter();
                 Calculate();
                 const string result = "Results Created. Press any key";
@@ -33,7 +34,7 @@ namespace TournamentCalculator
             }
             catch (Exception e)
             {
-                ExcelService.KillAllExcelProcesses();
+                ExcelService.ExcelService.KillAllExcelProcesses();
 
                 const string result = "Error Occured. Press any key";
                 Console.WriteLine(result);
@@ -50,10 +51,10 @@ namespace TournamentCalculator
             var oldCi = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
-            var resultWorksheet = ExcelService.GetResultWorksheet(fasitFile);
+            var resultWorksheet = ExcelService.ExcelService.GetResultWorksheet(fasitFile);
 
             var excel = new Application { Visible = false, UserControl = false };
-            Worksheet correctResultsWorksheet = ExcelService.GetWorksheet(excel, resultWorksheet);
+            Worksheet correctResultsWorksheet = ExcelService.ExcelService.GetWorksheet(excel, resultWorksheet);
             StringCollection tablePosistions = GroupStage.GetTablePositions();
 
             // Fasit for sluttspill
@@ -66,7 +67,7 @@ namespace TournamentCalculator
 
             ResultFile.Create(scoresForAllUsers);
 
-            ExcelService.Cleanup(excel);
+            ExcelService.ExcelService.Cleanup(excel);
 
             // reset old culture info
             System.Threading.Thread.CurrentThread.CurrentCulture = oldCi;
@@ -92,7 +93,7 @@ namespace TournamentCalculator
 
             Console.WriteLine("Processing {0}", file);
 
-            Worksheet worksheet = ExcelService.GetWorksheet(excel, file);
+            Worksheet worksheet = ExcelService.ExcelService.GetWorksheet(excel, file);
             IEnumerable<int> matchesInGroupStage = GroupStage.GetMatches();
             int score = 0;
 

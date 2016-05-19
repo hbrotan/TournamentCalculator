@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Microsoft.Office.Interop.Excel;
+using TournamentCalculator.Entities;
 
 namespace TournamentCalculator.ExcelReaders
 {

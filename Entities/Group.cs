@@ -1,6 +1,6 @@
-﻿namespace TournamentCalculator
+﻿namespace TournamentCalculator.Entities
 {
-    public class GroupBE
+    public class Group
     {
         public string Letter { get; set; }
         public string ExcelColumn { get; set; }

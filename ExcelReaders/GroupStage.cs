@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using TournamentCalculator.Entities;
 
 namespace TournamentCalculator.ExcelReaders
 {
@@ -33,17 +34,17 @@ namespace TournamentCalculator.ExcelReaders
                 yield return i;            
         }
 
-        private static IEnumerable<GroupBE> GetGroups()
+        private static IEnumerable<Group> GetGroups()
         {
-            var groups = new List<GroupBE>
+            var groups = new List<Group>
             {
                 //Hardkodet
-                new GroupBE {Letter = "A", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 9},
-                new GroupBE {Letter = "B", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 15},
-                new GroupBE {Letter = "C", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 21},
-                new GroupBE {Letter = "D", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 27},
-                new GroupBE {Letter = "E", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 33},
-                new GroupBE {Letter = "F", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 39}
+                new Group {Letter = "A", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 9},
+                new Group {Letter = "B", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 15},
+                new Group {Letter = "C", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 21},
+                new Group {Letter = "D", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 27},
+                new Group {Letter = "E", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 33},
+                new Group {Letter = "F", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 39}
             };
             return groups;
         }

@@ -2,9 +2,13 @@
 Calculates scores for World Cup and Euros.
 
 App.settings -> Sett lokale filstier for Fasit, Result, Score
+
 **Fasit**: Ett regneark - Fasit.xlsx som oppdateres ved nye resultat
+
 **Result**: Resultatfil - json
+
 **Score**: Alle tippeforslagene legges her
+
 Det er et mal-excelark -> "EM2016_Fornavn_Etternavn.xlsx" som sendes ut til brukerne.
 
 ####Euro2016 - Poengscore gis etter følgende kriterier:

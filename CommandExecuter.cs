@@ -109,19 +109,22 @@ namespace TournamentCalculator
                 var home = worksheet.Range["F" + i.ToString(CultureInfo.InvariantCulture), Type.Missing].Value2.ToString();
                 var away = worksheet.Range["G" + i.ToString(CultureInfo.InvariantCulture), Type.Missing].Value2.ToString();
 
-                if (GetHub(fasitHome, fasitAway).Equals(GetHub(home, away))) score += 2;
-                if (fasitHome.Equals(home) && fasitAway.Equals(away)) score += 2;
+                if (GetHub(fasitHome, fasitAway).Equals(GetHub(home, away)))
+                    PointCalculator.AddScoreForCorrectOutcomeInGroupMatch(ref score);
+
+                if (fasitHome.Equals(home) && fasitAway.Equals(away)) 
+                    PointCalculator.AddScoreForCorrectResultInGroupMatch(ref score);
             }
 
             // The table postitions, only if all matches are played                
-            if (Tournament.IsGroupStageFinished(worksheet))
+            if (Tournament.IsGroupStageFinished(correctResultsWorksheet))
             {
                 foreach (var tablePos in tablePosistions)
                 {
                     var fasitPos = correctResultsWorksheet.Range[tablePos, Type.Missing].Value2.ToString();
                     var pos = worksheet.Range[tablePos, Type.Missing].Value2.ToString();
                     if (fasitPos.Equals(pos))
-                        PointCalculator.AddScoreToGroupStageMatch(ref score, pos);
+                        PointCalculator.AddScoreForCorrectPlacementInGroup(ref score, pos);
                 }
 
                 // The 1/8 finals

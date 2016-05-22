@@ -14,7 +14,21 @@ namespace TournamentCalculator.ExcelReaders
             return score;
         }
 
-        public static void AddScoreToGroupStageMatch(ref int score, dynamic pos)
+        public static void AddScoreForCorrectResultInGroupMatch(ref int score)
+        {
+            score += 2;
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine("+2 for gruppespillkamp : korrekt resultat");
+        }
+
+        public static void AddScoreForCorrectOutcomeInGroupMatch(ref int score)
+        {
+            score += 2;
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine("+2 for gruppespillkamp : korrekt utfall");
+        }
+
+        public static void AddScoreForCorrectPlacementInGroup(ref int score, dynamic pos)
         {
             score += 2;
             Console.OutputEncoding = Encoding.UTF8;

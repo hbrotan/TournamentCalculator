@@ -12,7 +12,8 @@ namespace TournamentCalculator.ExcelReaders
 
         public static bool IsGroupStageFinished(Worksheet worksheet)
         {
-            return !String.IsNullOrEmpty(Convert.ToString(worksheet.Range["F45", Type.Missing].Value2));
+            var lastMatch = Convert.ToString(worksheet.Range["F45", Type.Missing].Value2);
+            return !String.IsNullOrEmpty(lastMatch);
         }
     }
 }

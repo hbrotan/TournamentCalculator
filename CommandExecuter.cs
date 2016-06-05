@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Office.Interop.Excel;
 using TournamentCalculator.Entities;
 using TournamentCalculator.ExcelReaders;
@@ -27,10 +29,11 @@ namespace TournamentCalculator
                 // create new command executer instance
                 ExcelService.ExcelService.KillAllExcelProcesses();
                 new CommandExecuter();
-                Calculate();
-                const string result = "Results Created. Press any key";
-                Console.WriteLine(result);
-                Console.ReadKey();
+                var results = Calculate();                
+
+                var html = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("TournamentCalculator.Client.index.html")).ReadToEnd();
+                File.WriteAllText("results.html", html.Replace("INSERT_JSON_HERE", results));
+                Process.Start("results.html");                
             }
             catch (Exception e)
             {
@@ -43,7 +46,7 @@ namespace TournamentCalculator
             }
         }
 
-        private static void Calculate()
+        private static string Calculate()
         {
             string fasitFile = ConfigurationManager.AppSettings["Fasit"];
             string sourceDirctory = ConfigurationManager.AppSettings["Source"];
@@ -65,12 +68,14 @@ namespace TournamentCalculator
             foreach (var participant in Directory.GetFiles(sourceDirctory, "*.xlsx*"))
                 AddParticipantScore(participant, excel, correctResultsWorksheet, tablePosistions, results, sourceDirctory, scoresForAllUsers);
 
-            ResultFile.Create(scoresForAllUsers);
+            var json = ResultFile.Create(scoresForAllUsers);
 
             ExcelService.ExcelService.Cleanup(excel);
 
             // reset old culture info
             System.Threading.Thread.CurrentThread.CurrentCulture = oldCi;
+
+            return json;
         }
 
         private static Results GetResultsFromWorksheet(Worksheet correctResultsWorksheet)
@@ -153,7 +158,7 @@ namespace TournamentCalculator
             }
 
             var name = file.Replace(sourceDirctory, "").Replace(FILE_PREFIX, "").Replace("_", " ").Replace(".xlsx", "").Replace("\\", "").Trim();
-
+            
             scoresForAllUsers.Add(name, score);
         }
 

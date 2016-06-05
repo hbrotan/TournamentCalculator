@@ -120,6 +120,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Placement.cs" />
     <Compile Include="Entities\ResultFile.cs" />
     <Compile Include="Entities\Results.cs" />
     <Compile Include="ExcelReaders\GroupStage.cs" />
@@ -128,6 +129,9 @@
     <Compile Include="ExcelReaders\Tournament.cs" />
     <Compile Include="Entities\Group.cs" />
     <Compile Include="ExcelReaders\TeamPlacementReader.cs" />
+    <EmbeddedResource Include="Client\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>

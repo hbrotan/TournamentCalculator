@@ -1,13 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Net.Http;
+using System.Text;
 using Microsoft.Office.Interop.Excel;
 using TournamentCalculator.Entities;
 using TournamentCalculator.ExcelReaders;
@@ -31,9 +30,18 @@ namespace TournamentCalculator
                 new CommandExecuter();
                 var results = Calculate();                
 
-                var html = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("TournamentCalculator.Client.index.html")).ReadToEnd();
-                File.WriteAllText("results.html", html.Replace("INSERT_JSON_HERE", results));
-                Process.Start("results.html");                
+
+                //Post to REST API
+                var httpContent = new StringContent(results, Encoding.UTF8, "application/json");
+                
+                var client = new HttpClient();
+
+                var url = string.Format("http://tournament.azurewebsites.net/api/tournament/{0}/league/{1}/result", FILE_PREFIX, ConfigurationManager.AppSettings["Liganavn"]);
+
+                var response = client.PostAsync(url, httpContent).Result;
+
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                
             }
             catch (Exception e)
             {

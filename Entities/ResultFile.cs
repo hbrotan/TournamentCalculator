@@ -48,8 +48,12 @@ namespace TournamentCalculator.Entities
         {
             foreach (var placement in placements)
             {
-                placement.Trend = placement.Rank - scoresForYesterday.Single(x => x.Name == placement.Name).Rank;
-                placement.PointDifferenceFromYesterday = placement.Points - scoresForYesterday.Single(x => x.Name == placement.Name).Points;
+                var score = scoresForYesterday.SingleOrDefault(x => x.Name == placement.Name);
+                if (score != null)
+                {
+                    placement.Trend = placement.Rank - score.Rank;
+                    placement.PointDifferenceFromYesterday = placement.Points - score.Points;
+                }
             }
             return placements;
         }

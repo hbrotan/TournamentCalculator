@@ -76,7 +76,7 @@ namespace TournamentCalculator.Entities
                 return null;
 
             var fileForYesterday = File.ReadAllText(filename);
-            return JsonConvert.DeserializeObject<List<Placement>>(fileForYesterday);            
+            return JsonConvert.DeserializeObject<List<Placement>>(fileForYesterday);
         }
 
         private static int GetRank(KeyValuePair<string, int> entry, Placement prevPlacement, int currentRank)

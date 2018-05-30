@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using OfficeOpenXml;
 using TournamentCalculator.Entities;
@@ -15,7 +16,7 @@ namespace TournamentCalculator
 {
     public class Program
     {
-        private const string FilePrefix = "EM2016";
+        private const string FilePrefix = "VM2018";
 
         static void Main(string[] args)
         {
@@ -28,23 +29,26 @@ namespace TournamentCalculator
             try
             {
                 var results = Calculate(configuration);
-
-                var client = new HttpClient();
-                var response = client
-                    .PostAsync(string.Format(
-                            "https://tournament.azurewebsites.net/api/tournament/{0}/league/{1}/result",
-                            FilePrefix, configuration["Tournament:Liganavn"]),
-                        new StringContent(results, Encoding.UTF8, "application/json")).Result;
-
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                UploadResults(configuration, results);
             }
             catch (Exception e)
             {
-                const string result = "Error Occured. Press any key";
+                const string result = "Error Occurred. Press any key";
                 Console.WriteLine(result);
-                Console.Out.Write(e.Message);
+                Console.Write(e.Message);
                 Console.ReadKey();
             }
+        }
+
+        private static void UploadResults(IConfigurationRoot configuration, string results)
+        {
+            var client = new HttpClient();
+            var response = client
+                .PostAsync(string.Format(configuration["Tournament:Upload"],
+                        FilePrefix, configuration["Tournament:Liganavn"]),
+                    new StringContent(results, Encoding.UTF8, "application/json")).Result;
+
+            Console.WriteLine(response.Content.ReadAsStringAsync().Result);
         }
 
         private static string Calculate(IConfiguration configuration)
@@ -53,8 +57,8 @@ namespace TournamentCalculator
             var sourceDirctory = configuration["Tournament:Source"];
             var resultFilePattern = configuration["Tournament:Result"];
 
-            var oldCi = System.Threading.Thread.CurrentThread.CurrentCulture;
-            System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            var currentCulture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
             var resultWorksheet = ExcelService.ExcelService.GetResultWorksheet(fasitFile);
             var correctResultsWorksheet = ExcelService.ExcelService.GetWorksheet(resultWorksheet);
@@ -62,7 +66,7 @@ namespace TournamentCalculator
 
             // Fasit for sluttspill
             var results = GetResultsFromWorksheet(correctResultsWorksheet);
-            
+
             // Regner ut poengsummene
             var scoresForAllUsers = new Dictionary<string, int>();
             foreach (var participant in Directory.GetFiles(sourceDirctory, "*.xlsx*"))
@@ -71,7 +75,7 @@ namespace TournamentCalculator
             var json = ResultFile.Create(scoresForAllUsers, resultFilePattern);
 
             // reset old culture info
-            System.Threading.Thread.CurrentThread.CurrentCulture = oldCi;
+            Thread.CurrentThread.CurrentCulture = currentCulture;
 
             return json;
         }
@@ -83,6 +87,7 @@ namespace TournamentCalculator
                 TeamsInEightFinal = TeamPlacementReader.GetTeamsForEightFinal(correctResultsWorksheet),
                 TeamsInQuarterFinal = TeamPlacementReader.GetTeamsForQuarterFinals(correctResultsWorksheet),
                 TeamsInSemiFinal = TeamPlacementReader.GetTeamsForSemiFinals(correctResultsWorksheet),
+                TeamsInBronzeFinal = TeamPlacementReader.GetTeamsForBronzeFinals(correctResultsWorksheet),
                 TeamsInFinal = TeamPlacementReader.GetTeamsForFinals(correctResultsWorksheet),
                 Winner = TeamPlacementReader.GetWinner(correctResultsWorksheet)
             };
@@ -115,11 +120,11 @@ namespace TournamentCalculator
                 if (GetHub(fasitHome, fasitAway).Equals(GetHub(home, away)))
                     PointCalculator.AddScoreForCorrectOutcomeInGroupMatch(ref score);
 
-                if (fasitHome.Equals(home) && fasitAway.Equals(away)) 
+                if (fasitHome.Equals(home) && fasitAway.Equals(away))
                     PointCalculator.AddScoreForCorrectResultInGroupMatch(ref score);
             }
 
-            // The table postitions, only if all matches are played                
+            // The table postitions, only if all matches are played
             if (Tournament.IsGroupStageFinished(correctResultsWorksheet))
             {
                 foreach (var tablePos in tablePosistions)
@@ -145,10 +150,30 @@ namespace TournamentCalculator
                 foreach (var semifinalist in results.TeamsInSemiFinal.Cast<string>().Where(semis.Contains))
                     PointCalculator.AddScoreForSemifinals(ref score, semifinalist);
 
+                // The bronze final
+                var bronzeFinal = TeamPlacementReader.GetTeamsForBronzeFinals(worksheet);
+                foreach (var finalist in results.TeamsInBronzeFinal.Cast<string>().Where(bronzeFinal.Contains))
+                    PointCalculator.AddScoreForTeamInBronzeFinals(ref score, finalist);
+
                 // The final
                 var final = TeamPlacementReader.GetTeamsForFinals(worksheet);
                 foreach (var finalist in results.TeamsInFinal.Cast<string>().Where(final.Contains))
                     PointCalculator.AddScoreForTeamInFinals(ref score, finalist);
+
+                // The bronze final
+                if (Tournament.IsBronzeWinnerDecided(correctResultsWorksheet))
+                {
+                    var fasitHome = correctResultsWorksheet.Cells["BS35"].Value.ToString();
+                    var fasitAway = correctResultsWorksheet.Cells["BS36"].Value.ToString();
+                    var home = worksheet.Cells["BS35"].Value.ToString();
+                    var away = worksheet.Cells["BS36"].Value.ToString();
+
+                    if (GetHub(fasitHome, fasitAway) == "H" && GetHub(home, away) == "H" && bronzeFinal[0] == results.TeamsInBronzeFinal[0])
+                        PointCalculator.AddScoreForBronzeWinner(ref score, results.TeamsInBronzeFinal[0]);
+
+                    if (GetHub(fasitHome, fasitAway) == "B" && GetHub(home, away) == "B" && bronzeFinal[1] == results.TeamsInBronzeFinal[1])
+                        PointCalculator.AddScoreForBronzeWinner(ref score, results.TeamsInBronzeFinal[1]);
+                }
 
                 // The winner
                 if (Tournament.IsWinnerDecided(worksheet))
@@ -156,7 +181,7 @@ namespace TournamentCalculator
             }
 
             var name = file.Replace(sourceDirctory, "").Replace(FilePrefix, "").Replace("_", " ").Replace(".xlsx", "").Replace("\\", "").Trim();
-            
+
             scoresForAllUsers.Add(name, score);
         }
 

@@ -8,7 +8,7 @@ namespace TournamentCalculator.ExcelReaders
     public class GroupStage
     {
         private const int NumberOfTeamsInGroup = 4;
-        private const string ColumnTableStandings = "M";
+        private const string ColumnTableStandings = "J";
         
         public static StringCollection GetTablePositions()
         {
@@ -29,7 +29,7 @@ namespace TournamentCalculator.ExcelReaders
 
         public static IEnumerable<int> GetMatches()
         {            
-            for (var i = 8; i <= 45; i++)
+            for (var i = 5; i <= 54; i++)
                 yield return i;
         }
 
@@ -43,7 +43,9 @@ namespace TournamentCalculator.ExcelReaders
                 new Group {Letter = "C", ExcelColumn = ColumnTableStandings, ExcelRow = 21},
                 new Group {Letter = "D", ExcelColumn = ColumnTableStandings, ExcelRow = 27},
                 new Group {Letter = "E", ExcelColumn = ColumnTableStandings, ExcelRow = 33},
-                new Group {Letter = "F", ExcelColumn = ColumnTableStandings, ExcelRow = 39}
+                new Group {Letter = "F", ExcelColumn = ColumnTableStandings, ExcelRow = 39},
+                new Group {Letter = "G", ExcelColumn = ColumnTableStandings, ExcelRow = 45},
+                new Group {Letter = "H", ExcelColumn = ColumnTableStandings, ExcelRow = 51}
             };
             return groups;
         }

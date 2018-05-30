@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Microsoft.Office.Interop.Excel;
+using OfficeOpenXml;
 using TournamentCalculator.Entities;
 
 namespace TournamentCalculator.ExcelReaders
@@ -35,7 +35,7 @@ namespace TournamentCalculator.ExcelReaders
             Console.WriteLine("+2 for {0} på korrekt plass i gruppen", pos);
         }
 
-        public static void AddScoreForWinner(Worksheet worksheet, Results results, ref int score)
+        public static void AddScoreForWinner(ExcelWorksheet worksheet, Results results, ref int score)
         {
             var winner = TeamPlacementReader.GetWinner(worksheet);
 

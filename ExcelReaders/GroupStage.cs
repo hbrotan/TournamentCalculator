@@ -7,9 +7,8 @@ namespace TournamentCalculator.ExcelReaders
 {
     public class GroupStage
     {
-        private const int NUMBER_OF_TEAMS_IN_GROUP = 4;
-
-        private const string COLUMN_TABLE_STANDINGS = "M";
+        private const int NumberOfTeamsInGroup = 4;
+        private const string ColumnTableStandings = "M";
         
         public static StringCollection GetTablePositions()
         {
@@ -18,10 +17,10 @@ namespace TournamentCalculator.ExcelReaders
             var tablePosistions = new StringCollection();
             foreach (var group in groups)
             {
-                for (var i = 0; i < NUMBER_OF_TEAMS_IN_GROUP; i++)
+                for (var i = 0; i < NumberOfTeamsInGroup; i++)
                 {
-                    var pos = Convert.ToInt32(@group.ExcelRow) + Convert.ToInt32(i);
-                    tablePosistions.Add(String.Format("{0}", @group.ExcelColumn + pos));
+                    var position = Convert.ToInt32(group.ExcelRow) + Convert.ToInt32(i);
+                    tablePosistions.Add($"{group.ExcelColumn + position}");
                 }
             }
             return tablePosistions;
@@ -31,7 +30,7 @@ namespace TournamentCalculator.ExcelReaders
         public static IEnumerable<int> GetMatches()
         {            
             for (var i = 8; i <= 45; i++)
-                yield return i;            
+                yield return i;
         }
 
         private static IEnumerable<Group> GetGroups()
@@ -39,12 +38,12 @@ namespace TournamentCalculator.ExcelReaders
             var groups = new List<Group>
             {
                 //Hardkodet
-                new Group {Letter = "A", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 9},
-                new Group {Letter = "B", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 15},
-                new Group {Letter = "C", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 21},
-                new Group {Letter = "D", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 27},
-                new Group {Letter = "E", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 33},
-                new Group {Letter = "F", ExcelColumn = COLUMN_TABLE_STANDINGS, ExcelRow = 39}
+                new Group {Letter = "A", ExcelColumn = ColumnTableStandings, ExcelRow = 9},
+                new Group {Letter = "B", ExcelColumn = ColumnTableStandings, ExcelRow = 15},
+                new Group {Letter = "C", ExcelColumn = ColumnTableStandings, ExcelRow = 21},
+                new Group {Letter = "D", ExcelColumn = ColumnTableStandings, ExcelRow = 27},
+                new Group {Letter = "E", ExcelColumn = ColumnTableStandings, ExcelRow = 33},
+                new Group {Letter = "F", ExcelColumn = ColumnTableStandings, ExcelRow = 39}
             };
             return groups;
         }

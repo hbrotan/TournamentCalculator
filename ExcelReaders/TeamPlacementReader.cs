@@ -1,76 +1,76 @@
 ﻿using System;
 using System.Collections.Specialized;
-using Microsoft.Office.Interop.Excel;
+using OfficeOpenXml;
 
 namespace TournamentCalculator.ExcelReaders
 {
     public class TeamPlacementReader
     {
-        public static string GetWinner(Worksheet worksheet)
+        public static string GetWinner(ExcelWorksheet worksheet)
         {
-            var val = Convert.ToString(worksheet.Range["DT41", Type.Missing].Value2);          
+            var val = Convert.ToString(worksheet.Cells["DT41"].Value);
             return !String.IsNullOrEmpty(val) ? val.Replace("*", string.Empty) : "";
         }
 
-        public static StringCollection GetTeamsForFinals(Worksheet worksheet)
+        public static StringCollection GetTeamsForFinals(ExcelWorksheet worksheet)
         {
             return new StringCollection
             {
-                worksheet.Range["DW23", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DW24", Type.Missing].Value2.ToString().Replace("*", string.Empty)
+                worksheet.Cells["DW23"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DW24"].Value.ToString().Replace("*", string.Empty)
             };
         }
 
-        public static StringCollection GetTeamsForSemiFinals(Worksheet worksheet)
+        public static StringCollection GetTeamsForSemiFinals(ExcelWorksheet worksheet)
         {
             return new StringCollection
             {
-                worksheet.Range["DQ16", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DQ17", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DQ32", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DQ33", Type.Missing].Value2.ToString().Replace("*", string.Empty)
+                worksheet.Cells["DQ16"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DQ17"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DQ32"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DQ33"].Value.ToString().Replace("*", string.Empty)
             };
         }
 
-        public static StringCollection GetTeamsForQuarterFinals(Worksheet worksheet)
+        public static StringCollection GetTeamsForQuarterFinals(ExcelWorksheet worksheet)
         {
             return new StringCollection
             {
-                worksheet.Range["DK12", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DK20", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DK28", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DK36", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DK13", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DK21", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DK29", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DK37", Type.Missing].Value2.ToString().Replace("*", string.Empty)
+                worksheet.Cells["DK12"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DK20"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DK28"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DK36"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DK13"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DK21"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DK29"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DK37"].Value.ToString().Replace("*", string.Empty)
             };
         }
 
-        public static StringCollection GetTeamsForEightFinal(Worksheet worksheet)
+        public static StringCollection GetTeamsForEightFinal(ExcelWorksheet worksheet)
         {
             if (!Tournament.IsGroupStageFinished(worksheet))
                 return new StringCollection();
 
             return new StringCollection
             {
-                worksheet.Range["DE10", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE14", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE18", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE22", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE26", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE30", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE34", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE38", Type.Missing].Value2.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE10"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE14"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE18"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE22"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE26"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE30"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE34"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE38"].Value.ToString().Replace("*", string.Empty),
 
-                worksheet.Range["DE11", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE15", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE19", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE23", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE27", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE31", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE35", Type.Missing].Value2.ToString().Replace("*", string.Empty),
-                worksheet.Range["DE39", Type.Missing].Value2.ToString().Replace("*", string.Empty)
+                worksheet.Cells["DE11"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE15"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE19"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE23"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE27"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE31"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE35"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["DE39"].Value.ToString().Replace("*", string.Empty)
             };
         }
     }

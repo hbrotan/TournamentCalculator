@@ -11,14 +11,14 @@ namespace TournamentCalculator.Entities
     {
         public static string Create(Dictionary<string, int> scoresForAllUsers)
         {
-            string resultFilePath = string.Format(ConfigurationManager.AppSettings["Result"], DateTime.Now.ToString("dd_MM_yyyy"));
+            var resultFilePath = string.Format(ConfigurationManager.AppSettings["Result"], DateTime.Now.ToString("dd_MM_yyyy"));
 
             var scoresOrdered = scoresForAllUsers
                 .OrderByDescending(x => x.Value)
                 .ThenBy(x => x.Key);
             
             Placement previousEntry = null;
-            int currentRank = 1;
+            var currentRank = 1;
             var scores = new List<Placement>();
             foreach (var entry in scoresOrdered)
             {
@@ -37,7 +37,7 @@ namespace TournamentCalculator.Entities
             if(yesterdaysPlacements != null)
                 scores = AddTrendAndPointsIncrease(scores, yesterdaysPlacements);
 
-            string json = JsonConvert.SerializeObject(scores.ToArray());
+            var json = JsonConvert.SerializeObject(scores.ToArray());
 
             File.WriteAllText(resultFilePath, json);
 

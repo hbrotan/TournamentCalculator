@@ -7,46 +7,36 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using Microsoft.Office.Interop.Excel;
+using OfficeOpenXml;
 using TournamentCalculator.Entities;
 using TournamentCalculator.ExcelReaders;
 
 namespace TournamentCalculator
 {
-    /// <summary>
-    /// Summary description for CommandExecuter.
-    /// </summary>
     public class CommandExecuter
     {
-        private const string FILE_PREFIX = "EM2016";
+        private const string FilePrefix = "EM2016";
 
         [STAThread]
         static void Main()
         {
             try
             {
-                // create new command executer instance
-                ExcelService.ExcelService.KillAllExcelProcesses();
-                new CommandExecuter();
-                var results = Calculate();                
-
+                var results = Calculate();
 
                 //Post to REST API
                 var httpContent = new StringContent(results, Encoding.UTF8, "application/json");
                 
                 var client = new HttpClient();
 
-                var url = string.Format("http://tournament.azurewebsites.net/api/tournament/{0}/league/{1}/result", FILE_PREFIX, ConfigurationManager.AppSettings["Liganavn"]);
+                var url = string.Format("https://tournament.azurewebsites.net/api/tournament/{0}/league/{1}/result", FilePrefix, ConfigurationManager.AppSettings["Liganavn"]);
 
                 var response = client.PostAsync(url, httpContent).Result;
 
                 Console.WriteLine(response.Content.ReadAsStringAsync().Result);
-                
             }
             catch (Exception e)
             {
-                ExcelService.ExcelService.KillAllExcelProcesses();
-
                 const string result = "Error Occured. Press any key";
                 Console.WriteLine(result);
                 Console.Out.Write(e.Message);
@@ -56,17 +46,15 @@ namespace TournamentCalculator
 
         private static string Calculate()
         {
-            string fasitFile = ConfigurationManager.AppSettings["Fasit"];
-            string sourceDirctory = ConfigurationManager.AppSettings["Source"];
+            var fasitFile = ConfigurationManager.AppSettings["Fasit"];
+            var sourceDirctory = ConfigurationManager.AppSettings["Source"];
 
             var oldCi = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
             var resultWorksheet = ExcelService.ExcelService.GetResultWorksheet(fasitFile);
-
-            var excel = new Application { Visible = false, UserControl = false };
-            Worksheet correctResultsWorksheet = ExcelService.ExcelService.GetWorksheet(excel, resultWorksheet);
-            StringCollection tablePosistions = GroupStage.GetTablePositions();
+            var correctResultsWorksheet = ExcelService.ExcelService.GetWorksheet(resultWorksheet);
+            var tablePosistions = GroupStage.GetTablePositions();
 
             // Fasit for sluttspill
             var results = GetResultsFromWorksheet(correctResultsWorksheet);
@@ -74,11 +62,9 @@ namespace TournamentCalculator
             // Regner ut poengsummene
             var scoresForAllUsers = new Dictionary<string, int>();
             foreach (var participant in Directory.GetFiles(sourceDirctory, "*.xlsx*"))
-                AddParticipantScore(participant, excel, correctResultsWorksheet, tablePosistions, results, sourceDirctory, scoresForAllUsers);
+                AddParticipantScore(participant, correctResultsWorksheet, tablePosistions, results, sourceDirctory, scoresForAllUsers);
 
             var json = ResultFile.Create(scoresForAllUsers);
-
-            ExcelService.ExcelService.Cleanup(excel);
 
             // reset old culture info
             System.Threading.Thread.CurrentThread.CurrentCulture = oldCi;
@@ -86,7 +72,7 @@ namespace TournamentCalculator
             return json;
         }
 
-        private static Results GetResultsFromWorksheet(Worksheet correctResultsWorksheet)
+        private static Results GetResultsFromWorksheet(ExcelWorksheet correctResultsWorksheet)
         {
             return new Results
             {
@@ -98,29 +84,29 @@ namespace TournamentCalculator
             };
         }
 
-        private static void AddParticipantScore(string file, Application excel, Worksheet correctResultsWorksheet, StringCollection tablePosistions, Results results, string sourceDirctory, Dictionary<string, int> scoresForAllUsers)
+        private static void AddParticipantScore(string file, ExcelWorksheet correctResultsWorksheet, StringCollection tablePosistions, Results results, string sourceDirctory, Dictionary<string, int> scoresForAllUsers)
         {
             var filename = Path.GetFileName(file);
-            if (filename == null || !filename.StartsWith(FILE_PREFIX))
+            if (filename == null || !filename.StartsWith(FilePrefix))
                 return;
 
             Console.WriteLine("Processing {0}", file);
 
-            Worksheet worksheet = ExcelService.ExcelService.GetWorksheet(excel, file);
-            IEnumerable<int> matchesInGroupStage = GroupStage.GetMatches();
-            int score = 0;
+            var worksheet = ExcelService.ExcelService.GetWorksheet(file);
+            var matchesInGroupStage = GroupStage.GetMatches();
+            var score = 0;
 
             // innledende kamper
             foreach (var i in matchesInGroupStage)
             {
-                var r = correctResultsWorksheet.Range["F" + i.ToString(CultureInfo.InvariantCulture), Type.Missing];
-                if (r.Value2 == null)
+                var r = correctResultsWorksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)];
+                if (r.Value == null)
                     continue;
 
-                var fasitHome = correctResultsWorksheet.Range["F" + i.ToString(CultureInfo.InvariantCulture), Type.Missing].Value2.ToString();
-                var fasitAway = correctResultsWorksheet.Range["G" + i.ToString(CultureInfo.InvariantCulture), Type.Missing].Value2.ToString();
-                var home = worksheet.Range["F" + i.ToString(CultureInfo.InvariantCulture), Type.Missing].Value2.ToString();
-                var away = worksheet.Range["G" + i.ToString(CultureInfo.InvariantCulture), Type.Missing].Value2.ToString();
+                var fasitHome = correctResultsWorksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
+                var fasitAway = correctResultsWorksheet.Cells["G" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
+                var home = worksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
+                var away = worksheet.Cells["G" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
 
                 if (GetHub(fasitHome, fasitAway).Equals(GetHub(home, away)))
                     PointCalculator.AddScoreForCorrectOutcomeInGroupMatch(ref score);
@@ -134,8 +120,8 @@ namespace TournamentCalculator
             {
                 foreach (var tablePos in tablePosistions)
                 {
-                    var fasitPos = correctResultsWorksheet.Range[tablePos, Type.Missing].Value2.ToString();
-                    var pos = worksheet.Range[tablePos, Type.Missing].Value2.ToString();
+                    var fasitPos = correctResultsWorksheet.Cells[tablePos].Value.ToString();
+                    var pos = worksheet.Cells[tablePos].Value.ToString();
                     if (fasitPos.Equals(pos))
                         PointCalculator.AddScoreForCorrectPlacementInGroup(ref score, pos);
                 }
@@ -165,7 +151,7 @@ namespace TournamentCalculator
                     PointCalculator.AddScoreForWinner(worksheet, results, ref score);
             }
 
-            var name = file.Replace(sourceDirctory, "").Replace(FILE_PREFIX, "").Replace("_", " ").Replace(".xlsx", "").Replace("\\", "").Trim();
+            var name = file.Replace(sourceDirctory, "").Replace(FilePrefix, "").Replace("_", " ").Replace(".xlsx", "").Replace("\\", "").Trim();
             
             scoresForAllUsers.Add(name, score);
         }

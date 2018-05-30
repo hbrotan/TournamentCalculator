@@ -1,37 +1,40 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using OfficeOpenXml;
 using TournamentCalculator.Entities;
 using TournamentCalculator.ExcelReaders;
 
 namespace TournamentCalculator
 {
-    public class CommandExecuter
+    public class Program
     {
         private const string FilePrefix = "EM2016";
 
-        [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true);
+
+            var configuration = builder.Build();
+
             try
             {
-                var results = Calculate();
+                var results = Calculate(configuration);
 
-                //Post to REST API
-                var httpContent = new StringContent(results, Encoding.UTF8, "application/json");
-                
                 var client = new HttpClient();
-
-                var url = string.Format("https://tournament.azurewebsites.net/api/tournament/{0}/league/{1}/result", FilePrefix, ConfigurationManager.AppSettings["Liganavn"]);
-
-                var response = client.PostAsync(url, httpContent).Result;
+                var response = client
+                    .PostAsync(string.Format(
+                            "https://tournament.azurewebsites.net/api/tournament/{0}/league/{1}/result",
+                            FilePrefix, configuration["Tournament:Liganavn"]),
+                        new StringContent(results, Encoding.UTF8, "application/json")).Result;
 
                 Console.WriteLine(response.Content.ReadAsStringAsync().Result);
             }
@@ -44,10 +47,11 @@ namespace TournamentCalculator
             }
         }
 
-        private static string Calculate()
+        private static string Calculate(IConfiguration configuration)
         {
-            var fasitFile = ConfigurationManager.AppSettings["Fasit"];
-            var sourceDirctory = ConfigurationManager.AppSettings["Source"];
+            var fasitFile = configuration["Tournament:Fasit"];
+            var sourceDirctory = configuration["Tournament:Source"];
+            var resultFilePattern = configuration["Tournament:Result"];
 
             var oldCi = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
@@ -64,7 +68,7 @@ namespace TournamentCalculator
             foreach (var participant in Directory.GetFiles(sourceDirctory, "*.xlsx*"))
                 AddParticipantScore(participant, correctResultsWorksheet, tablePosistions, results, sourceDirctory, scoresForAllUsers);
 
-            var json = ResultFile.Create(scoresForAllUsers);
+            var json = ResultFile.Create(scoresForAllUsers, resultFilePattern);
 
             // reset old culture info
             System.Threading.Thread.CurrentThread.CurrentCulture = oldCi;

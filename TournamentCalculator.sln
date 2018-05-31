@@ -1,6 +1,8 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TournamentCalculator", "TournamentCalculator.csproj", "{4D3FFA7A-A4A7-4927-9FB6-622EABE36F31}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TournamentCalculator", "TournamentCalculator.csproj", "{40D5DA46-78E8-4AAE-833B-1EB0019C838C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,12 +10,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4D3FFA7A-A4A7-4927-9FB6-622EABE36F31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D3FFA7A-A4A7-4927-9FB6-622EABE36F31}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D3FFA7A-A4A7-4927-9FB6-622EABE36F31}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D3FFA7A-A4A7-4927-9FB6-622EABE36F31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40D5DA46-78E8-4AAE-833B-1EB0019C838C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40D5DA46-78E8-4AAE-833B-1EB0019C838C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40D5DA46-78E8-4AAE-833B-1EB0019C838C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40D5DA46-78E8-4AAE-833B-1EB0019C838C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09BE94C2-D7DD-480A-BFE7-AEAA92C7A38C}
 	EndGlobalSection
 EndGlobal

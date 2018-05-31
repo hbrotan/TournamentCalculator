@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -9,16 +8,16 @@ namespace TournamentCalculator.Entities
 {
     public class ResultFile
     {
-        public static string Create(Dictionary<string, int> scoresForAllUsers)
+        public static string Create(Dictionary<string, int> scoresForAllUsers, string resultFilePattern)
         {
-            string resultFilePath = string.Format(ConfigurationManager.AppSettings["Result"], DateTime.Now.ToString("dd_MM_yyyy"));
+            var resultFilePath = string.Format(resultFilePattern, DateTime.Now.ToString("dd_MM_yyyy"));
 
             var scoresOrdered = scoresForAllUsers
                 .OrderByDescending(x => x.Value)
                 .ThenBy(x => x.Key);
             
             Placement previousEntry = null;
-            int currentRank = 1;
+            var currentRank = 1;
             var scores = new List<Placement>();
             foreach (var entry in scoresOrdered)
             {
@@ -33,11 +32,11 @@ namespace TournamentCalculator.Entities
                 currentRank++;
             }
 
-            var yesterdaysPlacements = GetScoresForYesterday();
+            var yesterdaysPlacements = GetScoresForYesterday(resultFilePattern);
             if(yesterdaysPlacements != null)
                 scores = AddTrendAndPointsIncrease(scores, yesterdaysPlacements);
 
-            string json = JsonConvert.SerializeObject(scores.ToArray());
+            var json = JsonConvert.SerializeObject(scores.ToArray());
 
             File.WriteAllText(resultFilePath, json);
 
@@ -58,14 +57,14 @@ namespace TournamentCalculator.Entities
             return placements;
         }
 
-        private static List<Placement> GetScoresForYesterday()
+        private static List<Placement> GetScoresForYesterday(string resultFilePattern)
         {
             var filename = String.Empty;
             var lastDayWithResults = DateTime.Now.AddDays(-1);
 
             while (lastDayWithResults >= DateTime.Now.AddDays(-5))
             {
-                filename = string.Format(ConfigurationManager.AppSettings["Result"], lastDayWithResults.ToString("dd_MM_yyyy"));
+                filename = string.Format(resultFilePattern, lastDayWithResults.ToString("dd_MM_yyyy"));
 
                 if(File.Exists(filename))
                     break;
@@ -77,7 +76,7 @@ namespace TournamentCalculator.Entities
                 return null;
 
             var fileForYesterday = File.ReadAllText(filename);
-            return JsonConvert.DeserializeObject<List<Placement>>(fileForYesterday);            
+            return JsonConvert.DeserializeObject<List<Placement>>(fileForYesterday);
         }
 
         private static int GetRank(KeyValuePair<string, int> entry, Placement prevPlacement, int currentRank)

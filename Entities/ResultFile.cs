@@ -8,9 +8,9 @@ namespace TournamentCalculator.Entities
 {
     public class ResultFile
     {
-        public static string Create(Dictionary<string, int> scoresForAllUsers, string resultFilePattern)
+        public static string Create(Dictionary<string, int> scoresForAllUsers, string resultsDirectory)
         {
-            var resultFilePath = string.Format(resultFilePattern, DateTime.Now.ToString("dd_MM_yyyy"));
+            var resultFilePath = $"{resultsDirectory}\\Resultat_{DateTime.Now:dd_MM_yyyy}.json";
 
             var scoresOrdered = scoresForAllUsers
                 .OrderByDescending(x => x.Value)
@@ -32,7 +32,7 @@ namespace TournamentCalculator.Entities
                 currentRank++;
             }
 
-            var yesterdaysPlacements = GetScoresForYesterday(resultFilePattern);
+            var yesterdaysPlacements = GetScoresForYesterday(resultsDirectory);
             if(yesterdaysPlacements != null)
                 scores = AddTrendAndPointsIncrease(scores, yesterdaysPlacements);
 
@@ -57,16 +57,16 @@ namespace TournamentCalculator.Entities
             return placements;
         }
 
-        private static List<Placement> GetScoresForYesterday(string resultFilePattern)
+        private static List<Placement> GetScoresForYesterday(string resultsDirectory)
         {
             var filename = String.Empty;
             var lastDayWithResults = DateTime.Now.AddDays(-1);
 
             while (lastDayWithResults >= DateTime.Now.AddDays(-5))
             {
-                filename = string.Format(resultFilePattern, lastDayWithResults.ToString("dd_MM_yyyy"));
+                filename = $"{resultsDirectory}\\Resultat_{lastDayWithResults:dd_MM_yyyy}.json";
 
-                if(File.Exists(filename))
+                if (File.Exists(filename))
                     break;
 
                 lastDayWithResults = lastDayWithResults.AddDays(-1);

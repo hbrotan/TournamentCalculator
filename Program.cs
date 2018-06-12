@@ -38,9 +38,24 @@ namespace TournamentCalculator
 
             var configuration = builder.Build();
 
+            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Leagues")))
+            {
+                Console.WriteLine($"Directory Leagues not found");
+                Console.ReadKey();
+                return;
+            }
+
+            if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Leagues", "Fasit.xlsx")))
+            {
+                Console.WriteLine($"Fasit.xlsx not found in Leagues folder");
+                Console.ReadKey();
+                return;
+            }
+
             try
             {
                 var sourceDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Leagues");
+
                 foreach (var league in Directory.GetDirectories(sourceDirectory))
                 {
                     Console.WriteLine($"Processing league {league}");
@@ -128,6 +143,14 @@ namespace TournamentCalculator
                 if (r.Value == null)
                     continue;
 
+                if (worksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)].Value == null || worksheet.Cells["G" + i.ToString(CultureInfo.InvariantCulture)].Value == null)
+                {
+                    Console.WriteLine($"Group stage not correctly filled out for: {filename}");
+                    Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
+                    Console.ReadLine();
+                    return;
+                }
+
                 var fasitHome = correctResultsWorksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
                 var fasitAway = correctResultsWorksheet.Cells["G" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
                 var home = worksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
@@ -143,6 +166,14 @@ namespace TournamentCalculator
             // The table postitions, only if all matches are played
             if (Tournament.IsGroupStageFinished(correctResultsWorksheet))
             {
+                if (worksheet.Cells["BA10"].Value == null)
+                {
+                    Console.WriteLine($"Knockout stage not correctly filled out for: {filename}");
+                    Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
+                    Console.ReadLine();
+                    return;
+                }
+
                 foreach (var tablePos in tablePosistions)
                 {
                     var fasitPos = correctResultsWorksheet.Cells[tablePos].Value.ToString();
@@ -181,6 +212,15 @@ namespace TournamentCalculator
                 {
                     var fasitHome = correctResultsWorksheet.Cells["BS35"].Value.ToString();
                     var fasitAway = correctResultsWorksheet.Cells["BS36"].Value.ToString();
+
+                    if (worksheet.Cells["BS35"].Value == null || worksheet.Cells["BS36"].Value == null)
+                    {
+                        Console.WriteLine($"Bronze final not correctly filled out for: {filename}");
+                        Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
+                        Console.ReadLine();
+                        return;
+                    }
+
                     var home = worksheet.Cells["BS35"].Value.ToString();
                     var away = worksheet.Cells["BS36"].Value.ToString();
 

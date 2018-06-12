@@ -133,6 +133,15 @@ namespace TournamentCalculator
             Console.WriteLine("Processing {0}", file);
 
             var worksheet = ExcelService.ExcelService.GetWorksheet(file);
+
+            if (worksheet.Cells["A1"].Value.ToString() != "Verdensmesterskapet i fotball 2018")
+            {
+                Console.WriteLine($"Language not Norwegian for: {filename}");
+                Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
+                Console.ReadLine();
+                return;
+            }
+
             var matchesInGroupStage = GroupStage.GetMatches();
             var score = 0;
 

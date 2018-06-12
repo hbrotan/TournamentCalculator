@@ -18,6 +18,18 @@ namespace TournamentCalculator
     {
         private const string FilePrefix = "VM2018";
 
+        /// <summary>
+        /// Assumes the following directories in same directory as executable (or different root)
+        /// 
+        /// /Leagues
+        ///     /<LeagueName>
+        ///         /Tips
+        ///         /Results
+        ///     Fasit.xslx
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
@@ -28,8 +40,13 @@ namespace TournamentCalculator
 
             try
             {
-                var results = Calculate(configuration);
-                UploadResults(configuration, results);
+                var sourceDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Leagues");
+                foreach (var league in Directory.GetDirectories(sourceDirectory))
+                {
+                    Console.WriteLine($"Processing league {league}");
+                    var results = Calculate(sourceDirectory, league);
+                    UploadResults(configuration["Tournament:Upload"], results, Path.GetFileName(league));
+                }
             }
             catch (Exception e)
             {
@@ -40,28 +57,27 @@ namespace TournamentCalculator
             }
         }
 
-        private static void UploadResults(IConfigurationRoot configuration, string results)
+        private static void UploadResults(string uploadPath, string results, string leagueName)
         {
             var client = new HttpClient();
             var response = client
-                .PostAsync(string.Format(configuration["Tournament:Upload"],
-                        FilePrefix, configuration["Tournament:Liganavn"]),
+                .PostAsync(string.Format(uploadPath, FilePrefix, leagueName),
                     new StringContent(results, Encoding.UTF8, "application/json")).Result;
 
             Console.WriteLine(response.Content.ReadAsStringAsync().Result);
         }
 
-        private static string Calculate(IConfiguration configuration)
+        private static string Calculate(string sourcePath, string leaguePath)
         {
-            var fasitFile = configuration["Tournament:Fasit"];
-            var sourceDirctory = configuration["Tournament:Source"];
-            var resultFilePattern = configuration["Tournament:Result"];
+            var fasitFile = Path.Combine(sourcePath, "Fasit.xlsx");
+            var sourceDirctory = Path.Combine(leaguePath, "Tippeforslag");
+            var resultsDirectory = Path.Combine(leaguePath, "Resultat");
 
             var currentCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
-            var resultWorksheet = ExcelService.ExcelService.GetResultWorksheet(fasitFile);
-            var correctResultsWorksheet = ExcelService.ExcelService.GetWorksheet(resultWorksheet);
+            //var resultWorksheet = ExcelService.ExcelService.GetResultWorksheet(fasitFile);
+            var correctResultsWorksheet = ExcelService.ExcelService.GetWorksheet(fasitFile);
             var tablePosistions = GroupStage.GetTablePositions();
 
             // Fasit for sluttspill
@@ -72,7 +88,7 @@ namespace TournamentCalculator
             foreach (var participant in Directory.GetFiles(sourceDirctory, "*.xlsx*"))
                 AddParticipantScore(participant, correctResultsWorksheet, tablePosistions, results, sourceDirctory, scoresForAllUsers);
 
-            var json = ResultFile.Create(scoresForAllUsers, resultFilePattern);
+            var json = ResultFile.Create(scoresForAllUsers, resultsDirectory);
 
             // reset old culture info
             Thread.CurrentThread.CurrentCulture = currentCulture;

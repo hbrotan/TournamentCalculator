@@ -23,8 +23,8 @@ namespace TournamentCalculator
         /// 
         /// /Leagues
         ///     /<LeagueName>
-        ///         /Tips
-        ///         /Results
+        ///         /Tippeforslag
+        ///         /Resultat
         ///     Fasit.xslx
         /// 
         /// </summary>
@@ -43,16 +43,16 @@ namespace TournamentCalculator
                 var sourceDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Leagues");
                 foreach (var league in Directory.GetDirectories(sourceDirectory))
                 {
-                    Console.WriteLine($"Processing league {league}");
+                    Console.WriteLine($"Processing league {Path.GetFileName(league)}");
                     var results = Calculate(sourceDirectory, league);
-                    UploadResults(configuration["Tournament:Upload"], results, Path.GetFileName(league));
+                    //UploadResults(configuration["Tournament:Upload"], results, Path.GetFileName(league));
                 }
             }
             catch (Exception e)
             {
                 const string result = "Error Occurred. Press any key";
                 Console.WriteLine(result);
-                Console.Write(e.Message);
+                Console.Write(e.ToString());
                 Console.ReadKey();
             }
         }
@@ -76,7 +76,6 @@ namespace TournamentCalculator
             var currentCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
-            //var resultWorksheet = ExcelService.ExcelService.GetResultWorksheet(fasitFile);
             var correctResultsWorksheet = ExcelService.ExcelService.GetWorksheet(fasitFile);
             var tablePosistions = GroupStage.GetTablePositions();
 
@@ -118,6 +117,10 @@ namespace TournamentCalculator
             Console.WriteLine("Processing {0}", file);
 
             var worksheet = ExcelService.ExcelService.GetWorksheet(file);
+
+            if (!HasValidLanguage(worksheet, file))
+                Console.ReadLine();
+
             var matchesInGroupStage = GroupStage.GetMatches();
             var score = 0;
 
@@ -127,6 +130,14 @@ namespace TournamentCalculator
                 var r = correctResultsWorksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)];
                 if (r.Value == null)
                     continue;
+
+                if (worksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)].Value == null || worksheet.Cells["G" + i.ToString(CultureInfo.InvariantCulture)].Value == null)
+                {
+                    Console.WriteLine($"Group stage not correctly filled out for: {filename}");
+                    Console.WriteLine("Excel sheet will be omitted. Press enter to continue processing the next sheet");
+                    Console.ReadLine();
+                    return;
+                }
 
                 var fasitHome = correctResultsWorksheet.Cells["F" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
                 var fasitAway = correctResultsWorksheet.Cells["G" + i.ToString(CultureInfo.InvariantCulture)].Value.ToString();
@@ -181,6 +192,15 @@ namespace TournamentCalculator
                 {
                     var fasitHome = correctResultsWorksheet.Cells["BS35"].Value.ToString();
                     var fasitAway = correctResultsWorksheet.Cells["BS36"].Value.ToString();
+
+                    if (worksheet.Cells["BS35"].Value == null || worksheet.Cells["BS36"].Value == null)
+                    {
+                        Console.WriteLine($"Bronze final not correctly filled out for: {filename}");
+                        Console.WriteLine("Excel sheet will be omitted. Press enter to continue processing the next sheet");
+                        Console.ReadLine();
+                        return;
+                    }
+
                     var home = worksheet.Cells["BS35"].Value.ToString();
                     var away = worksheet.Cells["BS36"].Value.ToString();
 
@@ -199,6 +219,18 @@ namespace TournamentCalculator
             var name = file.Replace(sourceDirctory, "").Replace(FilePrefix, "").Replace("_", " ").Replace(".xlsx", "").Replace("\\", "").Trim();
 
             scoresForAllUsers.Add(name, score);
+        }
+
+        private static bool HasValidLanguage(ExcelWorksheet worksheet, string fileName)
+        {
+            if (worksheet.Cells["O3"].Value.ToString() != "Language: Norwegian")
+            {
+                Console.WriteLine($"Language not Norwegian for: {fileName}");
+                Console.WriteLine("Excel sheet will be omitted. Press enter to continue processing the next sheet");
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

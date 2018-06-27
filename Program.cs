@@ -45,7 +45,7 @@ namespace TournamentCalculator
                 {
                     Console.WriteLine($"Processing league {Path.GetFileName(league)}");
                     var results = Calculate(sourceDirectory, league);
-                    //UploadResults(configuration["Tournament:Upload"], results, Path.GetFileName(league));
+                    UploadResults(configuration["Tournament:Upload"], results, Path.GetFileName(league));
                 }
             }
             catch (Exception e)
@@ -83,7 +83,7 @@ namespace TournamentCalculator
             var results = GetResultsFromWorksheet(correctResultsWorksheet);
 
             // Regner ut poengsummene
-            var scoresForAllUsers = new Dictionary<string, int>();
+            var scoresForAllUsers = new List<UserScore>();
             foreach (var participant in Directory.GetFiles(sourceDirctory, "*.xlsx*"))
                 AddParticipantScore(participant, correctResultsWorksheet, tablePosistions, results, sourceDirctory, scoresForAllUsers);
 
@@ -108,7 +108,7 @@ namespace TournamentCalculator
             };
         }
 
-        private static void AddParticipantScore(string file, ExcelWorksheet correctResultsWorksheet, StringCollection tablePosistions, Results results, string sourceDirctory, Dictionary<string, int> scoresForAllUsers)
+        private static void AddParticipantScore(string file, ExcelWorksheet correctResultsWorksheet, StringCollection tablePosistions, Results results, string sourceDirctory, List<UserScore> scoresForAllUsers)
         {
             var filename = Path.GetFileName(file);
             if (filename == null || !filename.StartsWith(FilePrefix))
@@ -218,7 +218,7 @@ namespace TournamentCalculator
 
             var name = file.Replace(sourceDirctory, "").Replace(FilePrefix, "").Replace("_", " ").Replace(".xlsx", "").Replace("\\", "").Trim();
 
-            scoresForAllUsers.Add(name, score);
+            scoresForAllUsers.Add(new UserScore{ Name = name, Points = score, Winner = TeamPlacementReader.GetWinner(worksheet)});
         }
 
         private static bool HasValidLanguage(ExcelWorksheet worksheet, string fileName)

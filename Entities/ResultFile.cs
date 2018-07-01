@@ -8,13 +8,13 @@ namespace TournamentCalculator.Entities
 {
     public class ResultFile
     {
-        public static string Create(Dictionary<string, int> scoresForAllUsers, string resultsDirectory)
+        public static string Create(List<UserScore> scoresForAllUsers, string resultsDirectory)
         {
             var resultFilePath = $"{resultsDirectory}\\Resultat_{DateTime.Now:dd_MM_yyyy}.json";
 
             var scoresOrdered = scoresForAllUsers
-                .OrderByDescending(x => x.Value)
-                .ThenBy(x => x.Key);
+                .OrderByDescending(x => x.Points)
+                .ThenBy(x => x.Name);
             
             Placement previousEntry = null;
             var currentRank = 1;
@@ -24,8 +24,9 @@ namespace TournamentCalculator.Entities
                 var placement = new Placement
                 {
                     Rank = GetRank(entry, previousEntry, currentRank),
-                    Name = entry.Key,
-                    Points = entry.Value
+                    Name = entry.Name,
+                    Points = entry.Points,
+                    Winner = entry.Winner
                 };
                 scores.Add(placement);
                 previousEntry = placement;
@@ -79,12 +80,12 @@ namespace TournamentCalculator.Entities
             return JsonConvert.DeserializeObject<List<Placement>>(fileForYesterday);
         }
 
-        private static int GetRank(KeyValuePair<string, int> entry, Placement prevPlacement, int currentRank)
+        private static int GetRank(UserScore entry, Placement prevPlacement, int currentRank)
         {
             if (prevPlacement == null)
                 return 1;
 
-            return entry.Value == prevPlacement.Points ? prevPlacement.Rank : currentRank;
+            return entry.Points == prevPlacement.Points ? prevPlacement.Rank : currentRank;
         }
     }
 }

@@ -38,9 +38,24 @@ namespace TournamentCalculator
 
             var configuration = builder.Build();
 
+            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Leagues")))
+            {
+                Console.WriteLine($"Directory Leagues not found");
+                Console.ReadKey();
+                return;
+            }
+
+            if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Leagues", "Fasit.xlsx")))
+            {
+                Console.WriteLine($"Fasit.xlsx not found in Leagues folder");
+                Console.ReadKey();
+                return;
+            }
+
             try
             {
                 var sourceDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Leagues");
+
                 foreach (var league in Directory.GetDirectories(sourceDirectory))
                 {
                     Console.WriteLine($"Processing league {Path.GetFileName(league)}");
@@ -118,8 +133,13 @@ namespace TournamentCalculator
 
             var worksheet = ExcelService.ExcelService.GetWorksheet(file);
 
-            if (!HasValidLanguage(worksheet, file))
+            if (worksheet.Cells["A1"].Value.ToString() != "Verdensmesterskapet i fotball 2018")
+            {
+                Console.WriteLine($"Language not Norwegian for: {filename}");
+                Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
                 Console.ReadLine();
+                return;
+            }
 
             var matchesInGroupStage = GroupStage.GetMatches();
             var score = 0;
@@ -135,6 +155,7 @@ namespace TournamentCalculator
                 {
                     Console.WriteLine($"Group stage not correctly filled out for: {filename}");
                     Console.WriteLine("Excel sheet will be omitted. Press enter to continue processing the next sheet");
+
                     Console.ReadLine();
                     return;
                 }
@@ -154,6 +175,14 @@ namespace TournamentCalculator
             // The table postitions, only if all matches are played
             if (Tournament.IsGroupStageFinished(correctResultsWorksheet))
             {
+                if (worksheet.Cells["BA10"].Value == null)
+                {
+                    Console.WriteLine($"Knockout stage not correctly filled out for: {filename}");
+                    Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
+                    Console.ReadLine();
+                    return;
+                }
+
                 foreach (var tablePos in tablePosistions)
                 {
                     var fasitPos = correctResultsWorksheet.Cells[tablePos].Value.ToString();

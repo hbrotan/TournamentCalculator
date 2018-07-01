@@ -20,8 +20,8 @@ namespace TournamentCalculator.ExcelReaders
 
         public static StringCollection GetTeamsForFinals(ExcelWorksheet worksheet)
         {
-            if (!Tournament.IsSemiFinalsFinished(worksheet))
-                return new StringCollection();
+            //if (!Tournament.IsSemiFinalsFinished(worksheet))
+            //    return new StringCollection();
 
             return new StringCollection
             {
@@ -32,8 +32,8 @@ namespace TournamentCalculator.ExcelReaders
 
         public static StringCollection GetTeamsForBronzeFinals(ExcelWorksheet worksheet)
         {
-            if (!Tournament.IsSemiFinalsFinished(worksheet))
-                return new StringCollection();
+            //if (!Tournament.IsSemiFinalsFinished(worksheet))
+            //    return new StringCollection();
 
             return new StringCollection
             {
@@ -44,8 +44,8 @@ namespace TournamentCalculator.ExcelReaders
 
         public static StringCollection GetTeamsForSemiFinals(ExcelWorksheet worksheet)
         {
-            if (!Tournament.IsQuarterFinalsFinished(worksheet))
-                return new StringCollection();
+            //if (!Tournament.IsQuarterFinalsFinished(worksheet))
+            //    return new StringCollection();
 
             return new StringCollection
             {
@@ -58,8 +58,8 @@ namespace TournamentCalculator.ExcelReaders
 
         public static StringCollection GetTeamsForQuarterFinals(ExcelWorksheet worksheet)
         {
-            if (!Tournament.IsEightFinalsFinished(worksheet))
-                return new StringCollection();
+            //if (!Tournament.IsEightFinalsFinished(worksheet))
+            //    return new StringCollection();
 
             return new StringCollection
             {

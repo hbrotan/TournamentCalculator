@@ -8,15 +8,15 @@ namespace TournamentCalculator.ExcelReaders
     {
         public static string GetWinner(ExcelWorksheet worksheet)
         {
-            var val = Convert.ToString(worksheet.Cells["BO41"].Value);
+            var val = Convert.ToString(worksheet.Cells["FO41"].Value);
             return !String.IsNullOrEmpty(val) ? val.Replace("*", string.Empty) : "";
         }
 
-        public static string GetBronzeWinner(ExcelWorksheet worksheet)
-        {
-            var val = Convert.ToString(worksheet.Cells["BO41"].Value);
-            return !String.IsNullOrEmpty(val) ? val.Replace("*", string.Empty) : "";
-        }
+        //public static string GetBronzeWinner(ExcelWorksheet worksheet)
+        //{
+        //    var val = Convert.ToString(worksheet.Cells["BO41"].Value);
+        //    return !String.IsNullOrEmpty(val) ? val.Replace("*", string.Empty) : "";
+        //}
 
         public static StringCollection GetTeamsForFinals(ExcelWorksheet worksheet)
         {
@@ -25,22 +25,22 @@ namespace TournamentCalculator.ExcelReaders
 
             return new StringCollection
             {
-                worksheet.Cells["BR23"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BR24"].Value.ToString().Replace("*", string.Empty)
+                worksheet.Cells["FR23"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FR24"].Value.ToString().Replace("*", string.Empty)
             };
         }
 
-        public static StringCollection GetTeamsForBronzeFinals(ExcelWorksheet worksheet)
-        {
-            //if (!Tournament.IsSemiFinalsFinished(worksheet))
-            //    return new StringCollection();
+        //public static StringCollection GetTeamsForBronzeFinals(ExcelWorksheet worksheet)
+        //{
+        //    //if (!Tournament.IsSemiFinalsFinished(worksheet))
+        //    //    return new StringCollection();
 
-            return new StringCollection
-            {
-                worksheet.Cells["BR35"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BR36"].Value.ToString().Replace("*", string.Empty)
-            };
-        }
+        //    return new StringCollection
+        //    {
+        //        worksheet.Cells["BR35"].Value.ToString().Replace("*", string.Empty),
+        //        worksheet.Cells["BR36"].Value.ToString().Replace("*", string.Empty)
+        //    };
+        //}
 
         public static StringCollection GetTeamsForSemiFinals(ExcelWorksheet worksheet)
         {
@@ -49,10 +49,10 @@ namespace TournamentCalculator.ExcelReaders
 
             return new StringCollection
             {
-                worksheet.Cells["BL16"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BL17"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BL32"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BL33"].Value.ToString().Replace("*", string.Empty)
+                worksheet.Cells["FK16"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FK17"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FK32"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FK33"].Value.ToString().Replace("*", string.Empty)
             };
         }
 
@@ -63,14 +63,14 @@ namespace TournamentCalculator.ExcelReaders
 
             return new StringCollection
             {
-                worksheet.Cells["BF12"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BF20"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BF28"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BF36"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BF13"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BF21"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BF29"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["BF37"].Value.ToString().Replace("*", string.Empty)
+                worksheet.Cells["FD12"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FD20"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FD28"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FD36"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FD13"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FD21"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FD29"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["FD37"].Value.ToString().Replace("*", string.Empty)
             };
         }
 
@@ -81,23 +81,23 @@ namespace TournamentCalculator.ExcelReaders
 
             return new StringCollection
             {
-                worksheet.Cells["AZ10"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ14"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ18"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ22"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ26"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ30"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ34"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ38"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW10"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW14"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW18"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW22"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW26"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW30"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW34"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW38"].Value.ToString().Replace("*", string.Empty),
 
-                worksheet.Cells["AZ11"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ15"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ19"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ23"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ27"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ31"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ35"].Value.ToString().Replace("*", string.Empty),
-                worksheet.Cells["AZ39"].Value.ToString().Replace("*", string.Empty)
+                worksheet.Cells["EW11"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW15"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW19"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW23"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW27"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW31"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW35"].Value.ToString().Replace("*", string.Empty),
+                worksheet.Cells["EW39"].Value.ToString().Replace("*", string.Empty)
             };
         }
     }

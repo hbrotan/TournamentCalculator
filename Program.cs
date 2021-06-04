@@ -16,7 +16,7 @@ namespace TournamentCalculator
 {
     public class Program
     {
-        private const string FilePrefix = "VM2018";
+        private const string FilePrefix = "EM2021";
 
         /// <summary>
         /// Assumes the following directories in same directory as executable (or different root)
@@ -117,7 +117,6 @@ namespace TournamentCalculator
                 TeamsInEightFinal = TeamPlacementReader.GetTeamsForEightFinal(correctResultsWorksheet),
                 TeamsInQuarterFinal = TeamPlacementReader.GetTeamsForQuarterFinals(correctResultsWorksheet),
                 TeamsInSemiFinal = TeamPlacementReader.GetTeamsForSemiFinals(correctResultsWorksheet),
-                TeamsInBronzeFinal = TeamPlacementReader.GetTeamsForBronzeFinals(correctResultsWorksheet),
                 TeamsInFinal = TeamPlacementReader.GetTeamsForFinals(correctResultsWorksheet),
                 Winner = TeamPlacementReader.GetWinner(correctResultsWorksheet)
             };
@@ -133,7 +132,7 @@ namespace TournamentCalculator
 
             var worksheet = ExcelService.ExcelService.GetWorksheet(file);
 
-            if (worksheet.Cells["A1"].Value.ToString() != "Verdensmesterskapet i fotball 2018")
+            if (worksheet.Cells["A1"].Value.ToString() != "UEFA EURO 2021 Turneringsskjema")
             {
                 Console.WriteLine($"Language not Norwegian for: {filename}");
                 Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
@@ -175,7 +174,7 @@ namespace TournamentCalculator
             // The table postitions, only if all matches are played
             if (Tournament.IsGroupStageFinished(correctResultsWorksheet))
             {
-                if (worksheet.Cells["BA10"].Value == null)
+                if (worksheet.Cells["EX10"].Value == null)
                 {
                     Console.WriteLine($"Knockout stage not correctly filled out for: {filename}");
                     Console.WriteLine($"Excel sheets will be omitted. Press enter to continue processing the next sheet");
@@ -207,9 +206,9 @@ namespace TournamentCalculator
                     PointCalculator.AddScoreForSemifinals(ref score, semifinalist);
 
                 // The bronze final
-                var bronzeFinal = TeamPlacementReader.GetTeamsForBronzeFinals(worksheet);
-                foreach (var finalist in results.TeamsInBronzeFinal.Cast<string>().Where(bronzeFinal.Contains))
-                    PointCalculator.AddScoreForTeamInBronzeFinals(ref score, finalist);
+                //var bronzeFinal = TeamPlacementReader.GetTeamsForBronzeFinals(worksheet);
+                //foreach (var finalist in results.TeamsInBronzeFinal.Cast<string>().Where(bronzeFinal.Contains))
+                //    PointCalculator.AddScoreForTeamInBronzeFinals(ref score, finalist);
 
                 // The final
                 var final = TeamPlacementReader.GetTeamsForFinals(worksheet);
@@ -217,28 +216,28 @@ namespace TournamentCalculator
                     PointCalculator.AddScoreForTeamInFinals(ref score, finalist);
 
                 // The bronze final
-                if (Tournament.IsBronzeWinnerDecided(correctResultsWorksheet))
-                {
-                    var fasitHome = correctResultsWorksheet.Cells["BS35"].Value.ToString();
-                    var fasitAway = correctResultsWorksheet.Cells["BS36"].Value.ToString();
+                //if (Tournament.IsBronzeWinnerDecided(correctResultsWorksheet))
+                //{
+                //    var fasitHome = correctResultsWorksheet.Cells["BS35"].Value.ToString();
+                //    var fasitAway = correctResultsWorksheet.Cells["BS36"].Value.ToString();
 
-                    if (worksheet.Cells["BS35"].Value == null || worksheet.Cells["BS36"].Value == null)
-                    {
-                        Console.WriteLine($"Bronze final not correctly filled out for: {filename}");
-                        Console.WriteLine("Excel sheet will be omitted. Press enter to continue processing the next sheet");
-                        Console.ReadLine();
-                        return;
-                    }
+                //    if (worksheet.Cells["BS35"].Value == null || worksheet.Cells["BS36"].Value == null)
+                //    {
+                //        Console.WriteLine($"Bronze final not correctly filled out for: {filename}");
+                //        Console.WriteLine("Excel sheet will be omitted. Press enter to continue processing the next sheet");
+                //        Console.ReadLine();
+                //        return;
+                //    }
 
-                    var home = worksheet.Cells["BS35"].Value.ToString();
-                    var away = worksheet.Cells["BS36"].Value.ToString();
+                //    var home = worksheet.Cells["BS35"].Value.ToString();
+                //    var away = worksheet.Cells["BS36"].Value.ToString();
 
-                    if (GetHub(fasitHome, fasitAway) == "H" && GetHub(home, away) == "H" && bronzeFinal[0] == results.TeamsInBronzeFinal[0])
-                        PointCalculator.AddScoreForBronzeWinner(ref score, results.TeamsInBronzeFinal[0]);
+                //    if (GetHub(fasitHome, fasitAway) == "H" && GetHub(home, away) == "H" && bronzeFinal[0] == results.TeamsInBronzeFinal[0])
+                //        PointCalculator.AddScoreForBronzeWinner(ref score, results.TeamsInBronzeFinal[0]);
 
-                    if (GetHub(fasitHome, fasitAway) == "B" && GetHub(home, away) == "B" && bronzeFinal[1] == results.TeamsInBronzeFinal[1])
-                        PointCalculator.AddScoreForBronzeWinner(ref score, results.TeamsInBronzeFinal[1]);
-                }
+                //    if (GetHub(fasitHome, fasitAway) == "B" && GetHub(home, away) == "B" && bronzeFinal[1] == results.TeamsInBronzeFinal[1])
+                //        PointCalculator.AddScoreForBronzeWinner(ref score, results.TeamsInBronzeFinal[1]);
+                //}
 
                 // The winner
                 if (Tournament.IsWinnerDecided(worksheet))

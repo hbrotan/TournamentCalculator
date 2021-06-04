@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace TournamentCalculator.Entities
 {
@@ -37,7 +37,7 @@ namespace TournamentCalculator.Entities
             if(yesterdaysPlacements != null)
                 scores = AddTrendAndPointsIncrease(scores, yesterdaysPlacements);
 
-            var json = JsonConvert.SerializeObject(scores.ToArray());
+            var json = JsonSerializer.Serialize(scores.ToArray());
 
             File.WriteAllText(resultFilePath, json);
 
@@ -77,7 +77,7 @@ namespace TournamentCalculator.Entities
                 return null;
 
             var fileForYesterday = File.ReadAllText(filename);
-            return JsonConvert.DeserializeObject<List<Placement>>(fileForYesterday);
+            return JsonSerializer.Deserialize<List<Placement>>(fileForYesterday);
         }
 
         private static int GetRank(UserScore entry, Placement prevPlacement, int currentRank)
